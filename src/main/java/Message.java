@@ -1,6 +1,6 @@
 public class Message {
     // 报文类型，规定：0:initialization  1:agreement  2:reverseRequest   3:reverseAnswer
-    private char type;
+    private short type;
     // 当 type=0 时就是任务书图示里的 N（总块数），2、3 就是传输 data 的长度。
     private int length;
     private String data;
@@ -10,18 +10,18 @@ public class Message {
     }
 
     // 有参构造方法
-    public Message(char type, int length, String data) {
+    public Message(short type, int length, String data) {
         this.type = type;
         this.length = length;
         this.data = data;
     }
 
     // Getter 和 Setter 方法
-    public char getType() {
+    public short getType() {
         return type;
     }
 
-    public void setType(char type) {
+    public void setType(short type) {
         this.type = type;
     }
 
