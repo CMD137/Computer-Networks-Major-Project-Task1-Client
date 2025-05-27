@@ -1,8 +1,13 @@
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 public class Message {
-    // 报文类型，规定：0:initialization  1:agreement  2:reverseRequest   3:reverseAnswer
+    // 报文类型，规定：1:initialization  2:agreement  3:reverseRequest   4:reverseAnswer
     private short type;
-    // 当 type=0 时就是任务书图示里的 N（总块数），2、3 就是传输 data 的长度。
+
+    // 当 type=1 时就是任务书图示里的 N（总块数），3、4 就是传输 data 的长度。
     private int length;
+
     private String data;
 
     // 无参构造方法
@@ -53,7 +58,27 @@ public class Message {
 
     //序列化
     public byte[] serialize() {
-        return null;
+        ByteBuffer buffer = null;
+        if (type==1){
+           buffer = ByteBuffer.allocate(6);
+           buffer.putShort(type);
+           buffer.putInt(length);// 当 type=1 时length就是N
+        } else if (type==2){
+            buffer=ByteBuffer.allocate(2);
+            buffer.putShort(type);
+        } else if (type==3) {
+            buffer=ByteBuffer.allocate(6+data.getBytes(StandardCharsets.UTF_8).length);
+            buffer.putShort(type);
+            buffer.putInt(length);
+            buffer.put(data.getBytes(StandardCharsets.UTF_8));
+        } else if (type==4) {
+            buffer=ByteBuffer.allocate(6+data.getBytes(StandardCharsets.UTF_8).length);
+            buffer.putShort(type);
+            buffer.putInt(length);
+            buffer.put(data.getBytes(StandardCharsets.UTF_8));
+        }
+
+        return buffer.array();
     }
 
     //反序列化

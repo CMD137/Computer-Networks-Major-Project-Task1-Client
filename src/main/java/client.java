@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class client {
@@ -36,16 +38,32 @@ public class client {
             System.out.println("错误：文件不存在，路径为：" + fileName);
             return;
         }
-        long fileLength = origin.length();
+        int fileLength = Math.toIntExact(origin.length());
         System.out.println("fileLength:" + fileLength);
 
-        //读取文件
-        byte[] content = new byte[(int) fileLength];
-        try (FileInputStream inputStream = new FileInputStream(origin)) {
-            content=inputStream.readAllBytes();
-        } catch (IOException e) {
-            System.err.println("读取文件时发生错误：" + e.getMessage());
-            e.printStackTrace();
+        //分块
+        List<Integer> lengthList =new ArrayList<>();
+        List<Message> messagesList  =   new ArrayList<>();
+        int N=0;
+        int tempTotalLength = fileLength;
+        Random random=new Random();
+        while (tempTotalLength>0){
+            int length=Lmin+random.nextInt(Lmax-Lmin);
+            //System.out.println("total"+tempTotalLength+'\t'+length);
+            if (tempTotalLength>=length){
+                tempTotalLength-=length;
+                lengthList.add(length);
+
+            }else{
+                lengthList.add(tempTotalLength);
+                tempTotalLength=0;
+            }
+            N++;
+        }
+
+        System.out.println("总块数："+N);
+        for (int i = 0; i < N; i++) {
+            System.out.println("第"+i+"块长度："+lengthList.get(i));
         }
 
 
