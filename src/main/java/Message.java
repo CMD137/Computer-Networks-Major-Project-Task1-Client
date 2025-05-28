@@ -21,6 +21,15 @@ public class Message {
         this.data = data;
     }
 
+    public Message(short type, int length){
+        this.type = type;
+        this.length = length;
+    }
+
+    public Message(short type){
+        this.type = type;
+    }
+
     // Getter 和 Setter 方法
     public short getType() {
         return type;
@@ -83,6 +92,27 @@ public class Message {
 
     //反序列化
     public static Message deserialize(byte[] bytes) {
-        return null;
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+
+        //type:
+        short type = buffer.getShort();
+
+        Message message=new Message();
+        message.setType(type);
+
+        if (type==1){
+            //N
+            int N= buffer.getInt();
+            message.setLength(N);
+        } else if (type == 3||type==4) {
+            int length=buffer.getInt();
+            byte[] dataByte= new byte[]{buffer.get(length)};
+
+            message.setLength(length);
+            message.setData(new String(dataByte,StandardCharsets.UTF_8));
+        }else {
+            System.out.println("反序列化出错");
+        }
+        return message;
     }
 }
