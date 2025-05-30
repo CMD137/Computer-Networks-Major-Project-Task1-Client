@@ -117,6 +117,7 @@ public class Client {
                 Message response = receiveMessage(inputStream);
                 result.insert(0, response.getData());
                 System.out.println("第"+index+"块："+response.getData());
+                index++;
             }
         } catch (IOException e) {
             System.out.println("服务器连接异常");
@@ -124,7 +125,7 @@ public class Client {
         }
 
         String reverseText= result.toString();
-        System.out.println(reverseText);
+        System.out.println("反转："+reverseText);
 
         //4.写入文件
         try (FileOutputStream fos = new FileOutputStream("src/main/resources/result.txt")){
@@ -139,7 +140,7 @@ public class Client {
     private static void sendMessage(OutputStream out, Message message) throws IOException {
         byte[] data = message.serialize();
         out.write(data);
-        out.flush(); // 确保数据发送
+        out.flush();
     }
 
     private static Message receiveMessage(InputStream in) throws IOException {
@@ -176,8 +177,7 @@ public class Client {
             throw new IOException("未知消息类型: " + type);
         }
 
-        // 读取剩余数据（如果有）
-
+        // 读取文本
         byte[] data = new byte[dataLength];
         bytesRead = 0;
         while (bytesRead < dataLength) {
@@ -193,6 +193,5 @@ public class Client {
         System.arraycopy(data, 0, fullData, 6, dataLength);
 
         return Message.deserialize(fullData);
-
     }
 }
