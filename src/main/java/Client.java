@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,31 +95,29 @@ public class Client {
 
         //2.建立连接
         StringBuilder result=new StringBuilder();
-        try {
-            Socket socket=new Socket(serverIP,serverPort);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+        try (Socket socket = new Socket(serverIP, serverPort);
+             InputStream inputStream = socket.getInputStream();
+             OutputStream outputStream = socket.getOutputStream()) {
 
             //初始化信息
-            Message firstMessage=new Message((short) 1,N);
-            writer.println(firstMessage.serialize());
-            byte[] bytes = reader.readLine().getBytes(StandardCharsets.UTF_8);
-            Message firstResponse=Message.deserialize(bytes);
+            Message firstMessage = new Message((short)1, N);
+            sendMessage(outputStream, firstMessage);
 
-            if (firstResponse.getType()!=2){
-                System.out.println("服务器拒绝连接");
+            //接收Accept
+            Message firstResponse = receiveMessage(inputStream);
+            if (firstResponse.getType() != 2) {
+                System.out.println("服务器拒绝连接或消息出错");
                 return;
             }
-            //3.循环N次对话，关闭连接
-            for (Message message:messagesList){
-                writer.println(message.serialize());
-                byte[] responseBytes = reader.readLine().getBytes(StandardCharsets.UTF_8);
-                Message response=Message.deserialize(responseBytes);
-                result.insert(0,response.getData());
-            }
 
-            writer.close();
-            socket.close();
+            //3.循环N次对话，关闭连接
+            int index=1;
+            for (Message message:messagesList){
+                sendMessage(outputStream, message);
+                Message response = receiveMessage(inputStream);
+                result.insert(0, response.getData());
+                System.out.println("第"+index+"块："+response.getData());
+            }
         } catch (IOException e) {
             System.out.println("服务器连接异常");
             throw new RuntimeException(e);
@@ -137,4 +136,63 @@ public class Client {
         }
     }
 
+    private static void sendMessage(OutputStream out, Message message) throws IOException {
+        byte[] data = message.serialize();
+        out.write(data);
+        out.flush(); // 确保数据发送
+    }
+
+    private static Message receiveMessage(InputStream in) throws IOException {
+        byte[] typeBytes = new byte[2];
+        byte[] lengthBytes = new byte[4];
+
+        // 先读type2Byte
+        int bytesRead = 0;
+        while (bytesRead < typeBytes.length) {
+            int count = in.read(typeBytes, bytesRead, typeBytes.length - bytesRead);
+            if (count == -1) throw new EOFException("连接已关闭");
+            bytesRead += count;
+        }
+        // 解析type
+        ByteBuffer buffer = ByteBuffer.wrap(typeBytes);
+        short type = buffer.getShort();
+
+        // 根据type决定后续读取长度:client只会收到2,4
+        int dataLength = 0;
+        if (type == 2) {
+            //直接返回一个agree
+            return new Message((short) 2);
+        } else if (type == 4) {
+            // type=4时，再读四字节：
+            bytesRead = 0;
+            while (bytesRead < lengthBytes.length) {
+                int count = in.read(lengthBytes, bytesRead, lengthBytes.length - bytesRead);
+                if (count == -1) throw new EOFException("连接已关闭");
+                bytesRead += count;
+            }
+            buffer = ByteBuffer.wrap(lengthBytes);
+            dataLength = buffer.getInt();
+        } else {
+            throw new IOException("未知消息类型: " + type);
+        }
+
+        // 读取剩余数据（如果有）
+
+        byte[] data = new byte[dataLength];
+        bytesRead = 0;
+        while (bytesRead < dataLength) {
+            int count = in.read(data, bytesRead, dataLength - bytesRead);
+            if (count == -1) throw new EOFException("连接已关闭");
+            bytesRead += count;
+        }
+
+        // 合并头部和数据部分
+        byte[] fullData = new byte[2+4+dataLength];
+        System.arraycopy(typeBytes, 0, fullData, 0, 2);
+        System.arraycopy(lengthBytes, 0, fullData, 2, 4);
+        System.arraycopy(data, 0, fullData, 6, dataLength);
+
+        return Message.deserialize(fullData);
+
+    }
 }

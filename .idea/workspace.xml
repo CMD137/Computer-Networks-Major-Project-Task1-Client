@@ -7,10 +7,9 @@
     <list default="true" id="b422b918-a0e6-4ebc-9ab8-10399ba81070" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/client/Message.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/client/Message.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/client/client$Listener.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/client/client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/client/client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Message.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Client.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +41,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Application.Client.executor&quot;: &quot;Run&quot;,
     &quot;Application.client.executor&quot;: &quot;Run&quot;,
     &quot;Maven.client [clean].executor&quot;: &quot;Run&quot;,
     &quot;Maven.client [compile].executor&quot;: &quot;Run&quot;,
@@ -88,7 +88,10 @@
       <workItem from="1748338489243" duration="36000" />
       <workItem from="1748346205531" duration="100000" />
       <workItem from="1748429841017" duration="3138000" />
-      <workItem from="1748438298754" duration="1764000" />
+      <workItem from="1748438298754" duration="2387000" />
+      <workItem from="1748527284024" duration="3465000" />
+      <workItem from="1748596904572" duration="4573000" />
+      <workItem from="1748612267161" duration="1408000" />
     </task>
     <servers />
   </component>
