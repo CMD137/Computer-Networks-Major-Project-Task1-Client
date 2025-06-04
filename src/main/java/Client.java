@@ -118,9 +118,14 @@ public class Client {
                 result.insert(0, response.getData());
                 System.out.println("第"+index+"块："+response.getData());
                 index++;
+
+                //为了展示多线程运行的，不然新的还没启动就结束了。
+                Thread.sleep(1000);
             }
         } catch (IOException e) {
             System.out.println("服务器连接异常");
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
@@ -128,7 +133,9 @@ public class Client {
         System.out.println("反转："+reverseText);
 
         //4.写入文件
-        try (FileOutputStream fos = new FileOutputStream("src/main/resources/result.txt")){
+        //文件名添加时间戳以方便多线程测试：
+        String resultFile = "src/main/resources/result_"+System.currentTimeMillis()+".txt";
+        try (FileOutputStream fos = new FileOutputStream(resultFile)){
             fos.write(reverseText.getBytes(StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
