@@ -8,10 +8,10 @@ import java.util.Random;
 
 public class Client {
     //注：该文本有785个字符  UTF-8(非BOM)
-    private static String fileName = "src/main/resources/origin.txt";
+    private static String fileName = "../resources/origin.txt";
     public static void main(String[] args) {
-        //TODO 开发时先直接写
-        /*
+        //TODO 命令行启动方式
+
         // 检查参数数量是否正确
         if (args.length != 4) {
             System.err.println("参数错误：需要提供 server IP, server port, Lmin, Lmax");
@@ -22,14 +22,15 @@ public class Client {
         int serverPort = Integer.parseInt(args[1]);
         int Lmin = Integer.parseInt(args[2]);
         int Lmax = Integer.parseInt(args[3]);
-        */
 
-        //TODO 最后完成后注释
+
+        //TODO IDEA启动方式
+        /*
         String serverIP = "127.0.0.1";
         int serverPort = 10086;
         int Lmin = 10;
         int Lmax = 100;
-
+        */
 
         //1.打开文件进行分段并计算N
         File origin = new File(fileName);
@@ -134,7 +135,7 @@ public class Client {
 
         //4.写入文件
         //文件名添加时间戳以方便多线程测试：
-        String resultFile = "src/main/resources/result_"+System.currentTimeMillis()+".txt";
+        String resultFile = "../resources/result_"+System.currentTimeMillis()+".txt";
         try (FileOutputStream fos = new FileOutputStream(resultFile)){
             fos.write(reverseText.getBytes(StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
